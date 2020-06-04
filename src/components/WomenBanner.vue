@@ -5,13 +5,15 @@
       <div class="row">
         <div class="col-lg-12 mt-5" v-if="products.length > 0">
           <carousel class="product-slider" :nav="false" :dots="false" :autoplay="true">
-            
             <div class="product-item" v-for="itemProduct in products" :key="itemProduct.id">
               <div class="pi-pic">
                 <img v-bind:src="itemProduct.galleries[0].photo" alt />
                 <ul>
                   <li class="w-icon active">
-                    <a href="#" @click="saveKeranjang(itemProduct.id, itemProduct.name, itemProduct.price, itemProduct.galleries[0].photo)">
+                    <a
+                      href="#"
+                      @click="saveKeranjang(itemProduct.id, itemProduct.name, itemProduct.price, itemProduct.galleries[0].photo)"
+                    >
                       <i class="icon_bag_alt"></i>
                     </a>
                   </li>
@@ -30,8 +32,7 @@
                   <span>$35.00</span>
                 </div>
               </div>
-            </div> 
-
+            </div>
           </carousel>
         </div>
 
@@ -59,49 +60,51 @@ export default {
     };
   },
   mounted() {
-    if (localStorage.getItem('keranjangUser')) {
+    if (localStorage.getItem("keranjangUser")) {
       try {
-        this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+        this.keranjangUser = JSON.parse(localStorage.getItem("keranjangUser"));
       } catch (error) {
-        localStorage.removeItem('keranjangUser');
+        localStorage.removeItem("keranjangUser");
       }
     }
     axios
       .get("http://127.0.0.1:8000/api/products")
-      .then(res => (this.products = res.data.data.data))
+      .then(res => {
+        this.products = res.data.data.data;
+      })
       .catch(err => console.log(err));
   },
   methods: {
-     saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct) {
+    saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct) {
       // this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
       var productStored = {
-        "id" : idProduct,
-        "name": nameProduct,
-        "price" : priceProduct,
-        "photo": photoProduct,
-        
+        id: idProduct,
+        name: nameProduct,
+        price: priceProduct,
+        photo: photoProduct
       };
-      
+
       if (this.keranjangUser.find(e => e.id === idProduct)) {
-          this.$swal(
-                    'Error',
-                    nameProduct + ' has been added to your Cart',
-                    'error'
-                  )
+        this.$swal(
+          "Error",
+          nameProduct + " has been added to your Cart",
+          "error"
+        );
       } else {
         this.keranjangUser.push(productStored);
         const parsed = JSON.stringify(this.keranjangUser);
-        localStorage.setItem('keranjangUser', parsed);
+        localStorage.setItem("keranjangUser", parsed);
 
         this.$swal(
-                    'Add to Cart',
-                    nameProduct + ' has been added to your Cart',
-                    'success'
-                  )
+          "Add to Cart",
+          nameProduct + " has been added to your Cart",
+          "success"
+        );
+
+        window.location.reload();
       }
-      
     }
-  } 
+  }
 };
 </script>
 

@@ -44,7 +44,7 @@
                           <h5>{{keranjang.name}}</h5>
                         </td>
                         <td class="p-price first-row">${{keranjang.price}}</td>
-                        <td @click="removeItemCart(keranjang.index)"  class="delete-item">
+                        <td @click="removeItemCart(keranjang.index)" class="delete-item">
                           <a>
                             <i class="material-icons">close</i>
                           </a>
@@ -93,7 +93,12 @@
                     </div>
                     <div class="form-group">
                       <label for="alamatLengkap">Alamat Lengkap</label>
-                      <textarea class="form-control" id="alamatLengkap" rows="3" v-model="customerInfo.address"></textarea>
+                      <textarea
+                        class="form-control"
+                        id="alamatLengkap"
+                        rows="3"
+                        v-model="customerInfo.address"
+                      ></textarea>
                     </div>
                   </form>
                 </div>
@@ -135,7 +140,7 @@
                     </li>
                   </ul>
                   <!-- <router-link to="/success"> -->
-                    <a @click="checkout()" href="#" class="proceed-btn">I ALREADY PAID</a>
+                  <a @click="checkout()" href="#" class="proceed-btn">I ALREADY PAID</a>
                   <!-- </router-link> -->
                 </div>
               </div>
@@ -150,7 +155,7 @@
 
 <script>
 import HeaderNico from "@/components/HeaderNico.vue";
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   name: "Cart",
@@ -161,34 +166,32 @@ export default {
     return {
       keranjangUser: [],
       customerInfo: {
-        name: '',
-        email: '',
-        number: '',
-        address: ''
+        name: "",
+        email: "",
+        number: "",
+        address: ""
       }
     };
   },
   mounted() {
-    if (localStorage.getItem('keranjangUser')) {
+    if (localStorage.getItem("keranjangUser")) {
       try {
-        this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+        this.keranjangUser = JSON.parse(localStorage.getItem("keranjangUser"));
       } catch (error) {
-        localStorage.removeItem('keranjangUser');
+        localStorage.removeItem("keranjangUser");
       }
     }
   },
   methods: {
-    removeItemCart(index) 
-    {
+    removeItemCart(index) {
       this.keranjangUser.splice(index, 1);
       const parsed = JSON.stringify(this.keranjangUser);
-      localStorage.setItem('keranjangUser', parsed);
+      localStorage.setItem("keranjangUser", parsed);
     },
-    removeAllCart() 
-    {
+    removeAllCart() {
       this.keranjangUser = [];
       const parsed = JSON.stringify(this.keranjangUser);
-      localStorage.setItem('keranjangUser', parsed);
+      localStorage.setItem("keranjangUser", parsed);
     },
     // fungsi mengirim data ke API
     checkout() {
@@ -204,67 +207,58 @@ export default {
         transaction_total: this.totalBiaya,
         transaction_status: "PENDING",
         transaction_details: productIds
-      }
+      };
 
       let msgResponse = "";
       axios
-      .post("http://127.0.0.1:8000/api/checkout", checkoutData)
-      .then(() => {
-        
-        // Tampil Swall
-        this.$swal({
-          title: 'Success',
-          text: 'Success paid',
-          type: 'success',
-        }).then((result) => {
-          if (result.value) {
-            this.$router.push('success')
-          }
-        });
-
-      })
-      .catch(error => {
-        if (error.response) {
-          const err = error.response.data;
-          const listError = err.errors;
-          msgResponse = "<container class='d-flex justify-content-center'><ul>";
-          for (const index in listError) {
-            msgResponse += `<li> ${listError[index]} <br /></li>`;
-          }
-          msgResponse += "</ul></container>";
-
+        .post("http://127.0.0.1:8000/api/checkout", checkoutData)
+        .then(() => {
           // Tampil Swall
-          this.$swal(
-            'Error',
-            " " + msgResponse,
-            'error',
-          ).then((result) => {
+          this.$swal({
+            title: "Success",
+            text: "Success paid",
+            type: "success"
+          }).then(result => {
             if (result.value) {
-              console.log("yeah" + msgResponse);
+              this.$router.push("success");
             }
           });
-        }
-      });
+        })
+        .catch(error => {
+          if (error.response) {
+            const err = error.response.data;
+            const listError = err.errors;
+            msgResponse =
+              "<container class='d-flex justify-content-center'><ul>";
+            for (const index in listError) {
+              msgResponse += `<li> ${listError[index]} <br /></li>`;
+            }
+            msgResponse += "</ul></container>";
 
-      
-    } 
+            // Tampil Swall
+            this.$swal("Error", " " + msgResponse, "error").then(result => {
+              if (result.value) {
+                console.log("yeah" + msgResponse);
+              }
+            });
+          }
+        });
+    }
   },
   computed: {
     totalHarga() {
-      return this.keranjangUser.reduce(function(items, data){
+      return this.keranjangUser.reduce(function(items, data) {
         return items + data.price;
       }, 0);
     },
     biayaPajak() {
-      return (this.totalHarga * 10 / 100); // 10%
+      return (this.totalHarga * 10) / 100; // 10%
     },
     totalBiaya() {
       return this.totalHarga + this.biayaPajak;
     }
   }
-  
 };
-
 </script>
 
 <style scoped>

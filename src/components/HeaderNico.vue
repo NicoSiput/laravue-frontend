@@ -37,8 +37,7 @@
                     <div class="select-items">
                       <table>
                         <tbody v-if="keranjangUser.length > 0">
-
-                          <tr v-for="(keranjang, index) in keranjangUser" :key="keranjang.id">
+                          <tr v-for="(keranjang) in keranjangUser" :key="keranjang.id">
                             <td class="si-pic">
                               <img class="photo-item" :src="keranjang.photo" alt />
                             </td>
@@ -48,7 +47,7 @@
                                 <h6>{{keranjang.name }}</h6>
                               </div>
                             </td>
-                            <td @click="removeItemCart(index)" class="si-close">
+                            <td @click="removeItemCart(keranjang.id)" class="si-close">
                               <i class="ti-close"></i>
                             </td>
                           </tr>
@@ -65,10 +64,10 @@
                       <h5>${{totalHarga}}</h5>
                     </div>
                     <div class="select-button">
-                      
-                        <a href="#" class="primary-btn view-card"><router-link to="/cart" style="color: #fff">VIEW CARD </router-link></a>
-                     
-                      
+                      <a href="#" class="primary-btn view-card">
+                        <router-link to="/cart" style="color: #fff">VIEW CARD</router-link>
+                      </a>
+
                       <a href="#" class="primary-btn checkout-btn">CHECK OUT</a>
                     </div>
                   </div>
@@ -92,25 +91,34 @@ export default {
     };
   },
   mounted() {
-    if (localStorage.getItem('keranjangUser')) {
+    if (localStorage.getItem("keranjangUser")) {
       try {
-        this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+        this.keranjangUser = JSON.parse(localStorage.getItem("keranjangUser"));
       } catch (error) {
-        localStorage.removeItem('keranjangUser');
+        localStorage.removeItem("keranjangUser");
       }
     }
   },
   methods: {
-    removeItemCart(index) 
-    {
+    removeItemCart(idx) {
+      let keranjangUserStorage = JSON.parse(
+        localStorage.getItem("keranjangUser")
+      );
+      let itemKeranjangUserStorage = keranjangUserStorage.map(
+        itemKeranjangUserStorage => itemKeranjangUserStorage.id
+      );
+
+      let index = itemKeranjangUserStorage.findIndex(id => id == idx);
       this.keranjangUser.splice(index, 1);
+
       const parsed = JSON.stringify(this.keranjangUser);
-      localStorage.setItem('keranjangUser', parsed);
+      localStorage.setItem("keranjangUser", parsed);
+      window.location.reload();
     }
   },
   computed: {
     totalHarga() {
-      return this.keranjangUser.reduce(function(items, data){
+      return this.keranjangUser.reduce(function(items, data) {
         return items + data.price;
       }, 0);
     }
