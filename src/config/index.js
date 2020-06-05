@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "http://laravue-backend.herokuapp.com/api",
+  baseURL: "https://laravue-backend.herokuapp.com/api",
 });
