@@ -28,11 +28,18 @@
                 <div class="product-pic-zoom">
                   <img class="product-big-img" :src="gambar_default" alt />
                 </div>
-                <div class="product-thumbs" v-if="productDetails.galleries.length > 0">
-                  <carousel :dots="false" :nav="false" class="product-thumbs-track ps-slider">
+                <div
+                  class="product-thumbs"
+                  v-if="productDetails.galleries.length > 0"
+                >
+                  <carousel
+                    :dots="false"
+                    :nav="false"
+                    class="product-thumbs-track ps-slider"
+                  >
                     <div
-                    v-for="ss in productDetails.galleries"
-                    :key="ss.id"
+                      v-for="ss in productDetails.galleries"
+                      :key="ss.id"
                       class="pt"
                       @click="changeImage(ss.photo)"
                       :class="ss.photo == gambar_default ? 'active' : ''"
@@ -45,16 +52,27 @@
               <div class="col-lg-6">
                 <div class="product-details text-left">
                   <div class="pd-title">
-                    <span>{{productDetails.type}}</span>
-                    <h3>{{productDetails.name}}</h3>
+                    <span>{{ productDetails.type }}</span>
+                    <h3>{{ productDetails.name }}</h3>
                   </div>
                   <div class="pd-desc">
                     <p v-html="productDetails.description"></p>
-                    <h4>${{productDetails.price}}</h4>
+                    <h4>${{ productDetails.price }}</h4>
                   </div>
                   <div class="quantity">
                     <router-link to="/cart">
-                      <a @click="saveKeranjang(productDetails.id, productDetails.name, productDetails.price, productDetails.galleries[0].photo)" class="primary-btn pd-cart">Add To Cart</a>
+                      <a
+                        @click="
+                          saveKeranjang(
+                            productDetails.id,
+                            productDetails.name,
+                            productDetails.price,
+                            productDetails.galleries[0].photo
+                          )
+                        "
+                        class="primary-btn pd-cart"
+                        >Add To Cart</a
+                      >
                     </router-link>
                   </div>
                 </div>
@@ -78,7 +96,7 @@ import RelatedProduct from "@/components/RelatedProduct.vue";
 import FooterNico from "@/components/FooterNico.vue";
 
 import carousel from "vue-owl-carousel";
-import axios from "axios";
+import Api from "../config/index";
 
 export default {
   name: "Product",
@@ -86,13 +104,13 @@ export default {
     HeaderNico,
     RelatedProduct,
     FooterNico,
-    carousel
+    carousel,
   },
   data() {
     return {
       gambar_default: "",
       productDetails: [],
-      keranjangUser: []
+      keranjangUser: [],
     };
   },
   methods: {
@@ -101,41 +119,38 @@ export default {
       console.log(this.$route.params.id);
     },
     setDataPicture(data) {
-       this.productDetails = data;
-       this.gambar_default = data.galleries[0].photo;
+      this.productDetails = data;
+      this.gambar_default = data.galleries[0].photo;
     },
     saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct) {
-
       var productStored = {
-        "id" : idProduct,
-        "name": nameProduct,
-        "price" : priceProduct,
-        "photo": photoProduct,
-        
+        id: idProduct,
+        name: nameProduct,
+        price: priceProduct,
+        photo: photoProduct,
       };
 
       this.keranjangUser.push(productStored);
       const parsed = JSON.stringify(this.keranjangUser);
-      localStorage.setItem('keranjangUser', parsed);
-    }
+      localStorage.setItem("keranjangUser", parsed);
+    },
   },
   mounted() {
-    if (localStorage.getItem('keranjangUser')) {
+    if (localStorage.getItem("keranjangUser")) {
       try {
-        this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+        this.keranjangUser = JSON.parse(localStorage.getItem("keranjangUser"));
       } catch (error) {
-        localStorage.removeItem('keranjangUser');
+        localStorage.removeItem("keranjangUser");
       }
     }
-    axios
-      .get("http://127.0.0.1:8000/api/products", {
-        params: {
-          id: this.$route.params.id
-        }
-      })
-      .then(res => (this.setDataPicture(res.data.data )))
-      .catch(err => console.log(err));
-  } 
+    Api.get("/products", {
+      params: {
+        id: this.$route.params.id,
+      },
+    })
+      .then((res) => this.setDataPicture(res.data.data))
+      .catch((err) => console.log(err));
+  },
 };
 </script>
 

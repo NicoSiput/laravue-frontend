@@ -41,9 +41,9 @@
                           <img class="img-cart" :src="keranjang.photo" />
                         </td>
                         <td class="cart-title first-row text-center">
-                          <h5>{{keranjang.name}}</h5>
+                          <h5>{{ keranjang.name }}</h5>
                         </td>
-                        <td class="p-price first-row">${{keranjang.price}}</td>
+                        <td class="p-price first-row">${{ keranjang.price }}</td>
                         <td @click="removeItemCart(keranjang.index)" class="delete-item">
                           <a>
                             <i class="material-icons">close</i>
@@ -116,15 +116,15 @@
                     </li>
                     <li class="subtotal mt-3">
                       Subtotal
-                      <span>$ {{totalHarga}}</span>
+                      <span>$ {{ totalHarga }}</span>
                     </li>
                     <li class="subtotal mt-3">
                       Pajak
-                      <span>10% ( $ {{biayaPajak}} )</span>
+                      <span>10% ( $ {{ biayaPajak }} )</span>
                     </li>
                     <li class="subtotal mt-3">
                       Total Biaya
-                      <span>$ {{totalBiaya}}</span>
+                      <span>$ {{ totalBiaya }}</span>
                     </li>
                     <li class="subtotal mt-3">
                       Bank Transfer
@@ -155,7 +155,7 @@
 
 <script>
 import HeaderNico from "@/components/HeaderNico.vue";
-import axios from "axios";
+import Api from "../config/index";
 
 export default {
   name: "Cart",
@@ -210,8 +210,7 @@ export default {
       };
 
       let msgResponse = "";
-      axios
-        .post("http://127.0.0.1:8000/api/checkout", checkoutData)
+      Api.post("/checkout", checkoutData)
         .then(() => {
           // Tampil Swall
           this.$swal({
@@ -220,6 +219,7 @@ export default {
             type: "success"
           }).then(result => {
             if (result.value) {
+              localStorage.clear(); // Clear storage
               this.$router.push("success");
             }
           });
