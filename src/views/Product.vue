@@ -66,8 +66,7 @@
                           saveKeranjang(
                             productDetails.id,
                             productDetails.name,
-                            productDetails.price,
-                            productDetails.galleries[0].photo
+                            productDetails.price
                           )
                         "
                         class="primary-btn pd-cart"
